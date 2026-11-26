@@ -1,6 +1,6 @@
 # WHITECROSS — каталог, остатки, счета и КП (Android)
 
-Приложение для Android 8+ в стиле сайта wcross.ru: каталог WHITECROSS по разделам, фильтр по цвету отделки,
+Приложение для Android 8+ (под Galaxy Z Fold 7: на внешнем экране нижняя панель, в развёрнутом — боковая) в стиле сайта wcross.ru: каталог WHITECROSS по разделам, фильтр по цвету отделки,
 остатки Краснодар и Москва, корзина, «Счёт на оплату» и «Коммерческое предложение» в PDF.
 
 ## Установка
@@ -19,6 +19,9 @@
 Новая выгрузка Sanjet (CSV, «;»), затем push — APK пересоберётся:
 
     python3 -I tools/import_csv.py export.csv app/src/main/assets/products.js
+    python3 -I tools/thumbs.py app/src/main/assets/products.js app/src/main/assets/img
+
+Второй шаг докачивает фото новых товаров: они встроены в APK, поэтому каталог и PDF показывают картинки без интернета.
 
 ## Проверки
     node --test test/*.test.js

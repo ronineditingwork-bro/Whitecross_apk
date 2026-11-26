@@ -11,156 +11,221 @@
   @font-face { font-family:'Open Sans'; src:url(fonts/OpenSans-Regular.woff) format('woff'); font-weight:400; }
   @font-face { font-family:'Open Sans'; src:url(fonts/OpenSans-Medium.woff) format('woff'); font-weight:500; }
   @font-face { font-family:'Open Sans'; src:url(fonts/OpenSans-SemiBold.woff) format('woff'); font-weight:600 800; }
-  /* Look of wcross.ru: black bar, warm dark sections with Bounded titles, light product grid, pill buttons */
-  :root { --black:#000; --ink:#1d1d1d; --grey:#b7b7b7; --muted:#5a5a5a; --light:#fbfbfb; --paper:#ebebeb; --tile:#e7e4df; --line:#e2e2e2;
-          --stone:linear-gradient(160deg, #4b4743 0%, #2d2b29 55%, #1f1e1d 100%); --ok:#2e8b57; --bad:#a33; }
+
+  /* Tokens. Brand: wcross.ru. Signature element: finish swatches; everything else stays quiet. */
+  :root {
+    --ink:#000; --paper:#fff; --stone:#ece9e4; --stone-2:#dcd8d1; --concrete:#b7b7b7; --graphite:#5a5a5a; --line:#e6e4e0;
+    --ok:#2f7d4f; --bg:#f6f5f3;
+    --display:'Bounded', 'Open Sans', Arial, sans-serif; --text:'Open Sans', Arial, sans-serif;
+    --nav:64px;
+  }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html, body { margin:0; height:100%; overscroll-behavior:none; -webkit-text-size-adjust:100%; }
-  body { font:15px/1.45 'Open Sans', Arial, sans-serif; background:var(--light); color:var(--ink); display:flex; flex-direction:column; height:100dvh; }
-  button { font:inherit; cursor:pointer; color:inherit; }
-  a { color:inherit; }
-  input, select, textarea { font:inherit; font-size:16px; /* under 16px mobile browsers zoom on tap */ width:100%; padding:10px 14px; border:1px solid #d6d6d6; border-radius:22px; background:#fff; color:var(--ink); min-height:46px; }
-  textarea { border-radius:14px; }
-  label { display:block; font-size:12px; color:var(--muted); margin:12px 0 4px; letter-spacing:.02em; }
-  .h { font-family:'Bounded', Arial, sans-serif; font-weight:400; text-transform:uppercase; letter-spacing:.04em; }
+  body { font:15px/1.45 var(--text); background:var(--bg); color:var(--ink); display:flex; flex-direction:column; height:100dvh; }
+  button { font:inherit; color:inherit; cursor:pointer; }
+  a { color:inherit; text-decoration:none; }
+  :focus-visible { outline:2px solid var(--ink); outline-offset:2px; }
+  img { display:block; }
+  input, select, textarea { font:inherit; font-size:16px; width:100%; min-height:48px; padding:12px 16px; border:1px solid var(--stone-2); border-radius:14px; background:var(--paper); color:var(--ink); }
+  textarea { min-height:72px; }
+  label { display:block; font-size:13px; color:var(--graphite); margin:14px 0 6px; }
+  .d { font-family:var(--display); font-weight:400; letter-spacing:.01em; }
+  .muted { color:var(--graphite); }
+  @media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
 
-  #splash { position:fixed; inset:0; z-index:40; background:#000; display:flex; align-items:center; justify-content:center; transition:opacity .3s; }
-  #splash img { width:min(260px, 70vw); }
+  #splash { position:fixed; inset:0; z-index:60; background:#000; display:flex; align-items:center; justify-content:center; transition:opacity .35s; }
+  #splash img { width:min(280px, 64vw); }
   #splash.hide { opacity:0; pointer-events:none; }
 
-  header { flex:none; background:#000; color:#fff; padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left); position:relative; z-index:35; }
-  .bar { display:flex; align-items:center; height:64px; padding:0 8px 0 12px; gap:4px; }
-  .bar .back { background:none; border:0; font-size:34px; line-height:1; width:36px; height:48px; color:#fff; margin-left:-6px; }
-  .bar .logo { flex:1; display:flex; align-items:center; min-width:0; background:none; border:0; padding:0; }
-  .bar .logo img { height:26px; }
-  .bar .ic { background:none; border:0; width:44px; height:48px; display:flex; align-items:center; justify-content:center; position:relative; color:#fff; }
-  .bar .ic svg { width:26px; height:26px; stroke:#fff; fill:none; stroke-width:1.6; }
-  .badge { position:absolute; top:6px; right:2px; background:#fff; color:#000; border-radius:9px; font-size:10px; font-weight:700; min-width:18px; height:18px; line-height:18px; padding:0 4px; text-align:center; }
-  .searchrow { padding:0 12px 12px; }
-  .searchrow form { display:flex; align-items:center; border:2px solid var(--grey); border-radius:24px; padding:0 6px 0 14px; }
-  .searchrow input { border:0; background:transparent; color:#fff; min-height:42px; padding:6px; }
+  /* shell: bottom bar on the cover screen, black rail when the Fold is open */
+  #app { flex:1; display:flex; flex-direction:column; min-height:0; min-width:0; }
+  header { flex:none; background:#000; color:#fff; padding-top:env(safe-area-inset-top); }
+  .top { display:flex; align-items:center; gap:6px; min-height:60px; padding:0 10px 0 16px; }
+  .top .logo { height:24px; }
+  .top h1 { flex:1; margin:0; font-size:17px; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .top .sp { flex:1; }
+  .iconbtn { background:none; border:0; width:44px; height:44px; display:grid; place-items:center; border-radius:50%; color:inherit; flex:none; }
+  .iconbtn svg { width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  .iconbtn.back { margin-left:-10px; }
+  main { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; }
+  .page { max-width:1240px; margin:0 auto; padding:0 16px 32px; }
 
-  #menu { position:fixed; inset:0; z-index:30; background:#000; color:#fff; display:none; flex-direction:column; padding:calc(env(safe-area-inset-top) + 76px) 28px 28px; }
-  #menu.on { display:flex; }
-  #menu button { background:none; border:0; color:#fff; text-align:left; font-size:20px; padding:14px 0; border-bottom:1px solid #2a2a2a; }
-  #menu .foot { margin-top:auto; color:var(--grey); font-size:13px; }
+  nav#nav { order:2; flex:none; display:flex; background:var(--paper); border-top:1px solid var(--line); padding-bottom:env(safe-area-inset-bottom); }
+  nav#nav button { flex:1; background:none; border:0; height:var(--nav); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; font-size:11px; color:var(--graphite); position:relative; }
+  nav#nav svg { width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  nav#nav button.on { color:var(--ink); font-weight:600; }
+  nav#nav button.on svg { stroke-width:2.1; }
+  nav#nav .mark { display:none; }
+  .badge { position:absolute; top:8px; left:calc(50% + 4px); min-width:18px; height:18px; padding:0 5px; border-radius:9px; background:var(--ink); color:#fff; font-size:10px; font-weight:700; line-height:18px; text-align:center; }
 
-  main { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
-  .wrap { max-width:980px; margin:0 auto; }
+  /* home */
+  .hero { background:#000; color:#fff; padding:6px 16px 22px; }
+  .hero form { max-width:720px; display:flex; align-items:center; gap:8px; background:#fff; color:var(--ink); border-radius:999px; padding:0 6px 0 18px; }
+  .hero input { border:0; min-height:52px; padding:0; border-radius:0; background:transparent; }
+  .hero .stamp { color:var(--concrete); font-size:13px; margin-top:12px; }
+  h2.sec { font-size:18px; margin:28px 0 14px; }
+  .groups { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; }
+  .group { position:relative; display:block; aspect-ratio:4/5; background:var(--stone); border-radius:20px; overflow:hidden; padding:14px; }
+  .group img { position:absolute; inset:14% 10% 26%; width:80%; height:60%; object-fit:contain; mix-blend-mode:multiply; }
+  .group .gname { position:absolute; left:14px; right:14px; bottom:14px; }
+  .group .gname b { display:block; font-family:var(--display); font-weight:400; font-size:15px; line-height:1.2; }
+  .group .gname small { color:var(--graphite); font-size:12px; }
+  .shelf { display:flex; gap:12px; overflow-x:auto; scroll-snap-type:x proximity; padding-bottom:6px; margin:0 -16px; padding-left:16px; padding-right:16px; scrollbar-width:none; }
+  .shelf .card { flex:0 0 168px; scroll-snap-align:start; }
 
-  /* home: one dark "stone" section per group, like the site's catalog page */
-  .sect { background:var(--stone); color:#fff; padding:34px 28px 30px; border-bottom:6px solid #000; }
-  .sect h2 { margin:0 0 20px; font-size:19px; }
-  .subs { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:20px 12px; }
-  .sub { background:none; border:0; padding:0; text-align:left; color:#fff; }
-  .sub .im { aspect-ratio:1; background:var(--tile); display:flex; align-items:center; justify-content:center; overflow:hidden; }
-  .sub .im img { width:86%; height:86%; object-fit:contain; mix-blend-mode:multiply; }
-  .sub span { display:block; font-size:13px; margin-top:8px; letter-spacing:.02em; }
-  .pill { display:inline-flex; align-items:center; justify-content:center; height:44px; padding:0 22px; border-radius:22px; border:0; background:#fff; color:#000; font-size:14px; font-weight:600; }
-  .pill.dark { background:#000; color:#fff; }
-  .pill.line { background:transparent; border:1.5px solid currentColor; }
-  .pill.wide { width:100%; height:52px; font-size:15px; }
-  .pill:disabled { opacity:.45; }
-  .sect .pill { margin-top:24px; }
-  .foot-black { background:#000; color:#fff; text-align:center; padding:28px 16px 36px; font-size:14px; letter-spacing:.03em; }
-  .foot-black small { display:block; color:#8d8d8d; margin-top:6px; }
+  /* catalog grid */
+  .grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:22px 12px; }
+  .card { min-width:0; }
+  .card .ph { display:block; aspect-ratio:1; background:var(--paper); border-radius:16px; overflow:hidden; position:relative; }
+  .card .ph img { width:100%; height:100%; object-fit:contain; }
+  .tag { position:absolute; top:10px; left:10px; background:#000; color:#fff; font-size:11px; padding:3px 9px; border-radius:999px; }
+  .fav { position:absolute; top:4px; right:4px; width:40px; height:40px; border:0; background:none; display:grid; place-items:center; color:var(--graphite); }
+  .fav svg { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.6; }
+  .fav.on { color:#000; } .fav.on svg { fill:#000; }
+  .fins { display:flex; gap:5px; margin:10px 0 6px; min-height:16px; flex-wrap:wrap; }
+  .fins i { width:14px; height:14px; border-radius:50%; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12); }
+  .fins i.cur { box-shadow:0 0 0 1.5px var(--bg), 0 0 0 2.5px #000; }
+  .card .nm { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; font-size:13px; line-height:1.35; color:var(--graphite); min-height:35px; }
+  .card .buy { display:flex; align-items:center; justify-content:space-between; gap:6px; margin-top:6px; }
+  .card .pr { font-weight:700; font-size:15px; white-space:nowrap; }
+  .add { width:40px; height:40px; border-radius:50%; border:0; background:#000; color:#fff; font-size:22px; line-height:1; flex:none; }
+  .step { display:inline-flex; align-items:center; background:#000; color:#fff; border-radius:999px; height:40px; }
+  .step button { width:36px; height:40px; border:0; background:none; color:#fff; font-size:18px; }
+  .step b { min-width:18px; text-align:center; font-size:14px; }
+  .stk { font-size:11.5px; color:var(--graphite); margin-top:6px; display:flex; gap:6px; flex-wrap:wrap; }
+  .stk span::before { content:''; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--concrete); margin-right:5px; vertical-align:1px; }
+  .stk span.in::before { background:var(--ok); }
+  .stk span.in { color:var(--ink); }
 
-  /* group page: black head with title, subgroups and finish swatches */
-  .ghead { background:#000; color:#fff; padding:24px 18px 20px; text-align:center; }
-  .ghead h1 { margin:0 0 6px; font-size:20px; }
-  .ghead .cnt { color:var(--grey); font-size:13px; }
-  .chips { display:flex; gap:8px; overflow-x:auto; padding:16px 0 4px; scrollbar-width:none; }
-  .chips button { flex:none; height:36px; padding:0 14px; border-radius:18px; border:1.5px solid #444; background:none; color:var(--grey); font-size:13px; white-space:nowrap; }
+  /* group header */
+  .ghead { background:#000; color:#fff; padding:2px 16px 18px; }
+  .chips { display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; margin:0 -16px; padding:0 16px; }
+  .chips button { flex:none; height:38px; padding:0 16px; border-radius:999px; border:1px solid #3a3a3a; background:none; color:#d6d6d6; font-size:13.5px; white-space:nowrap; }
   .chips button.on { background:#fff; color:#000; border-color:#fff; }
-  .sw { display:flex; flex-wrap:wrap; justify-content:center; gap:14px 6px; padding-top:18px; }
-  .sw button { background:none; border:0; width:78px; color:var(--grey); font-size:11px; line-height:1.25; padding:0; }
-  .dot { display:block; width:36px; height:36px; border-radius:50%; margin:0 auto 6px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.15); }
-  .sw button.on { color:#fff; } .sw button.on .dot { box-shadow:0 0 0 2px #000, 0 0 0 4px #fff; }
-
-  .tools { display:flex; justify-content:space-between; align-items:center; padding:14px 18px 4px; }
-  .tools button { background:none; border:0; color:var(--muted); font-size:12px; letter-spacing:.08em; text-transform:uppercase; padding:8px 0; }
-  .tools button.on { color:#000; font-weight:700; }
-  .grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:26px 12px; padding:12px 14px 28px; }
-  .card { text-align:center; }
-  .card .im { aspect-ratio:1; background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-  .card .im img { width:92%; height:92%; object-fit:contain; }
-  .card .nm { color:var(--muted); font-size:12.5px; margin:10px 2px 4px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
-  .card .pr { font-weight:700; font-size:15px; }
-  .st { font-size:11px; color:var(--muted); margin-top:2px; } .st.in { color:var(--ok); }
-  .card .act { display:flex; justify-content:center; align-items:center; gap:6px; margin-top:8px; }
-  .round { width:38px; height:38px; border-radius:50%; border:1.5px solid #000; background:#fff; color:#000; font-size:20px; line-height:1; padding:0; }
-  .round.dark { background:#000; color:#fff; }
-  .heart { background:none; border:0; font-size:22px; width:38px; height:38px; color:#999; padding:0; } .heart.on { color:#000; }
-  .qty { display:inline-flex; align-items:center; gap:4px; } .qty b { min-width:24px; }
-  .empty { text-align:center; color:var(--muted); padding:48px 20px; }
+  .finishes { display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; margin:14px -16px 0; padding:0 16px; }
+  .finishes button { flex:none; width:92px; background:none; border:0; color:var(--concrete); font-size:11px; line-height:1.25; padding:4px 4px; hyphens:auto; }
+  .dot { display:block; width:34px; height:34px; border-radius:50%; margin:0 auto 6px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.14); transition:box-shadow .15s; }
+  .finishes button.on { color:#fff; } .finishes button.on .dot { box-shadow:0 0 0 2px #000, 0 0 0 3.5px #fff; }
+  .bar { display:flex; align-items:center; gap:10px; padding:16px 0 14px; font-size:13px; color:var(--graphite); }
+  .bar .sp { flex:1; }
+  .bar select { width:auto; min-height:38px; padding:6px 32px 6px 14px; font-size:13px; border-radius:999px; background:var(--paper); }
+  .toggle { height:38px; padding:0 14px; border-radius:999px; border:1px solid var(--stone-2); background:var(--paper); font-size:13px; }
+  .toggle.on { background:#000; color:#fff; border-color:#000; }
+  .empty { text-align:center; color:var(--graphite); padding:56px 24px; max-width:420px; margin:0 auto; }
 
   /* product */
-  .gallery { display:flex; overflow-x:auto; scroll-snap-type:x mandatory; background:#fff; scrollbar-width:none; }
-  .gallery div { flex:0 0 100%; aspect-ratio:1; max-height:62vh; display:flex; align-items:center; justify-content:center; scroll-snap-align:start; }
-  .gallery img { max-width:90%; max-height:90%; object-fit:contain; }
-  .pinfo { padding:18px 18px 8px; text-align:center; }
-  .pinfo .h { font-size:15px; }
-  .pinfo .nm { color:var(--muted); margin:6px 0 10px; }
-  .pinfo .pr { font-size:24px; font-weight:700; }
-  .pinfo .sw { padding:14px 0 4px; } .pinfo .sw button { color:var(--muted); } .pinfo .sw button.on { color:#000; } .pinfo .sw button.on .dot { box-shadow:0 0 0 2px #fbfbfb, 0 0 0 4px #000; }
-  .addrow { display:grid; grid-template-columns:96px 1fr; gap:10px; padding:10px 18px; }
-  .addrow input { text-align:center; }
-  .block { padding:6px 18px 22px; }
-  .block h3 { font-size:13px; margin:18px 0 8px; }
-  .spec { display:grid; grid-template-columns:1fr 1fr; font-size:13px; }
-  .spec div { padding:8px 0; border-bottom:1px solid var(--line); } .spec div:nth-child(odd) { color:var(--muted); padding-right:10px; }
-  .desc { white-space:pre-line; font-size:13px; color:#333; }
+  .pd { padding-top:16px; }
+  .gallery { display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; background:var(--paper); border-radius:22px; }
+  .gallery > div { flex:0 0 100%; aspect-ratio:1; scroll-snap-align:center; display:grid; place-items:center; }
+  .gallery img { width:88%; height:88%; object-fit:contain; }
+  .dots { display:flex; justify-content:center; gap:6px; margin-top:10px; }
+  .dots i { width:6px; height:6px; border-radius:50%; background:var(--stone-2); }
+  .dots i.on { background:#000; }
+  .pinfo .art { color:var(--graphite); font-size:13px; margin-top:20px; }
+  .pinfo h2 { font-size:21px; line-height:1.3; margin:6px 0 12px; }
+  .pinfo .pr { font-size:28px; font-weight:700; }
+  .wh { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:16px 0; }
+  .wh div { background:var(--paper); border-radius:14px; padding:10px 14px; font-size:12px; color:var(--graphite); }
+  .wh b { display:block; font-size:15px; color:var(--ink); }
+  .wh b.in { color:var(--ok); }
+  .pfin { display:flex; flex-wrap:wrap; gap:6px 4px; margin:4px 0 8px; }
+  .pfin a { width:92px; text-align:center; font-size:11px; color:var(--graphite); line-height:1.25; padding:4px 4px; hyphens:auto; }
+  .pfin a.on { color:#000; font-weight:600; } .pfin a.on .dot { box-shadow:0 0 0 2px var(--bg), 0 0 0 3.5px #000; }
+  .pfin .dot { box-shadow:inset 0 0 0 1px rgba(0,0,0,.12); }
+  .buyrow { display:flex; gap:10px; margin:14px 0 6px; }
+  .qtybox { display:flex; align-items:center; border:1px solid var(--stone-2); border-radius:999px; background:var(--paper); }
+  .qtybox button { width:44px; height:52px; border:0; background:none; font-size:20px; }
+  .qtybox input { width:44px; min-height:0; border:0; padding:0; text-align:center; background:none; }
+  .btn { height:52px; padding:0 24px; border-radius:999px; border:0; background:#000; color:#fff; font-weight:600; font-size:15px; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+  .btn.ghost { background:var(--paper); color:#000; border:1px solid var(--stone-2); }
+  .btn.grow { flex:1; }
+  .btn.full { width:100%; }
+  .btn:disabled { opacity:.45; }
+  .favline { background:none; border:0; color:var(--graphite); font-size:14px; padding:8px 0; display:inline-flex; gap:8px; align-items:center; }
+  .favline svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.6; } .favline.on svg { fill:#000; stroke:#000; } .favline.on { color:#000; }
+  .specs { margin-top:24px; }
+  .specs h3 { font-size:15px; margin:0 0 6px; }
+  .specs dl { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); margin:0; font-size:13.5px; }
+  .specs dt, .specs dd { margin:0; padding:10px 0; border-bottom:1px solid var(--line); }
+  .specs dt { color:var(--graphite); padding-right:12px; }
+  .desc { white-space:pre-line; font-size:14px; color:#333; max-width:68ch; }
 
   /* cart, documents, settings */
-  .page { padding:8px 16px 28px; }
-  .ptitle { font-size:18px; margin:18px 0 12px; }
-  .cline { display:flex; gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid var(--line); }
-  .cline .im { width:72px; height:72px; flex:none; background:#fff; display:flex; align-items:center; justify-content:center; }
-  .cline .im img { max-width:90%; max-height:90%; object-fit:contain; }
-  .cline .mid { flex:1; min-width:0; font-size:12px; color:var(--muted); }
-  .cline .mid b { display:block; color:#000; font-size:13px; overflow-wrap:anywhere; }
-  .cline input { width:120px; min-height:36px; padding:4px 12px; margin-top:6px; font-size:16px; }
-  .cline .qty { flex-direction:column; }
-  .total { text-align:right; font-size:20px; margin:18px 0; }
+  .cartwrap { padding-top:8px; }
+  .line { display:grid; grid-template-columns:76px minmax(0,1fr); gap:12px; padding:14px 0; border-bottom:1px solid var(--line); }
+  .line .ph { width:76px; height:76px; background:var(--paper); border-radius:14px; overflow:hidden; }
+  .line .ph img { width:100%; height:100%; object-fit:contain; }
+  .line .t { font-size:13px; color:var(--graphite); line-height:1.35; }
+  .line .t b { display:block; color:#000; font-size:14px; }
+  .line .ctl { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:8px; flex-wrap:wrap; }
+  .line .price { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--graphite); }
+  .line .price input { width:110px; min-height:38px; padding:6px 12px; border-radius:999px; }
+  .line .sum { font-weight:700; white-space:nowrap; }
+  .summary { background:var(--paper); border-radius:22px; padding:20px; margin-top:18px; }
+  .summary .row { display:flex; justify-content:space-between; font-size:14px; color:var(--graphite); padding:4px 0; }
+  .summary .tot { display:flex; justify-content:space-between; align-items:baseline; margin:10px 0 18px; }
+  .summary .tot b { font-size:26px; }
+  .summary .btn { width:100%; margin-top:8px; }
+  .linkbtn { background:none; border:0; color:var(--graphite); font-size:13px; padding:12px 0 0; text-decoration:underline; text-underline-offset:3px; }
+  .panel { background:var(--paper); border-radius:22px; padding:6px 20px 20px; margin-top:16px; }
+  .panel h3 { font-size:15px; margin:16px 0 4px; }
+  .switch { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:14px 0; border-bottom:1px solid var(--line); margin:0; color:var(--ink); font-size:15px; }
+  .switch:last-child { border-bottom:0; }
+  .switch small { display:block; color:var(--graphite); font-size:12.5px; }
+  .switch input { width:24px; height:24px; min-height:0; accent-color:#000; flex:none; }
   .two { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .panel { background:#fff; padding:6px 16px 16px; margin-top:10px; }
-  .switch { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid var(--line); margin:0; color:var(--ink); font-size:15px; }
-  .switch small { display:block; color:var(--muted); font-size:12px; }
-  .switch input { width:22px; min-height:0; height:22px; accent-color:#000; }
-  .sticky { position:sticky; bottom:0; background:var(--light); padding:12px 0 6px; }
-  .hint { font-size:12px; color:var(--muted); }
+  .sticky { position:sticky; bottom:0; padding:14px 0 6px; background:linear-gradient(transparent, var(--bg) 30%); }
+  .hint { font-size:12.5px; color:var(--graphite); }
 
-  #toast { position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom)); transform:translateX(-50%); background:#000; color:#fff; padding:11px 18px; border-radius:22px; font-size:13px; z-index:50; opacity:0; transition:opacity .2s; pointer-events:none; max-width:90vw; text-align:center; }
-  #toast.on { opacity:1; }
+  #toast { position:fixed; left:50%; bottom:calc(var(--nav) + 18px + env(safe-area-inset-bottom)); transform:translate(-50%, 8px); background:#000; color:#fff; padding:12px 20px; border-radius:999px; font-size:13.5px; z-index:70; opacity:0; transition:opacity .2s, transform .2s; pointer-events:none; max-width:88vw; text-align:center; }
+  #toast.on { opacity:1; transform:translate(-50%, 0); }
 
-  @media (min-width:700px) {
-    .subs { grid-template-columns:repeat(4, minmax(0,1fr)); }
-    .grid { grid-template-columns:repeat(4, minmax(0,1fr)); }
-    .pwrap { display:grid; grid-template-columns:1fr 1fr; align-items:start; }
+  /* Fold 7 unfolded (and tablets): black rail on the left, wider grids, split screens */
+  @media (min-width:600px) {
+    body { flex-direction:row; }
+    nav#nav { order:-1; flex-direction:column; width:96px; background:#000; border:0; padding:calc(env(safe-area-inset-top) + 14px) 0 calc(env(safe-area-inset-bottom) + 14px); gap:6px; }
+    nav#nav .mark { display:block; width:40px; height:40px; margin:0 auto 18px; object-fit:cover; object-position:left; }
+    nav#nav button { flex:none; height:72px; color:#9a9a9a; }
+    nav#nav button.on { color:#fff; }
+    nav#nav button.on::before { content:''; position:absolute; inset:6px 14px; border-radius:18px; background:#262626; z-index:-1; }
+    nav#nav button { z-index:0; }
+    .badge { top:10px; left:calc(50% + 6px); background:#fff; color:#000; }
+    .top .logo { display:none; }
+    .page { padding:0 28px 40px; }
+    .hero { padding:8px 28px 28px; }
+    .ghead { padding:2px 28px 20px; }
+    .chips, .finishes { margin-left:-28px; margin-right:-28px; padding-left:28px; padding-right:28px; }
+    .shelf { margin:0 -28px; padding-left:28px; padding-right:28px; }
+    .shelf .card { flex-basis:200px; }
+    .groups { grid-template-columns:repeat(4, minmax(0,1fr)); gap:14px; }
+    .grid { grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:28px 16px; }
+    .pd { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:32px; align-items:start; padding-top:24px; }
+    .pd .gal { position:sticky; top:16px; }
+    .pinfo .art { margin-top:0; }
+    .cartwrap { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:28px; align-items:start; }
+    .cartwrap .summary { position:sticky; top:16px; margin-top:14px; }
+    .docwrap { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
+    #toast { bottom:calc(24px + env(safe-area-inset-bottom)); left:calc(50% + 48px); }
   }
 </style>
 </head>
 <body>
 <div id="splash"><img src="logo.svg" alt="WHITECROSS"></div>
-<header>
-  <div class="bar">
-    <button class="back" id="back" aria-label="Назад" hidden>‹</button>
-    <button class="logo" data-go="#/" aria-label="Каталог"><img src="logo.svg" alt="WHITECROSS"></button>
-    <button class="ic" id="searchBtn" aria-label="Поиск"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="M15.5 15.5 22 22"/></svg></button>
-    <button class="ic" data-go="#/cart" aria-label="Корзина"><svg viewBox="0 0 24 24"><path d="M3 4h2.5l2.2 11h11l2-8H6.3"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg><span class="badge" id="cartBadge" hidden></span></button>
-    <button class="ic" id="menuBtn" aria-label="Меню"><svg viewBox="0 0 24 24"><path d="M2 6h20M2 12h20M2 18h20"/></svg></button>
-  </div>
-  <div class="searchrow" id="searchRow" hidden><form id="searchForm"><input id="q" type="search" enterkeyhint="search" placeholder="Поиск по артикулу или названию" aria-label="Поиск"></form></div>
-</header>
-<div id="menu" role="dialog" aria-label="Меню">
-  <button class="h" data-go="#/">Каталог</button>
-  <button class="h" data-go="#/fav">Избранное</button>
-  <button class="h" data-go="#/cart">Корзина</button>
-  <button class="h" data-go="#/more">Настройки</button>
-  <div class="foot">Ванная комната как искусство<br>WHITECROSS · AMANA GROUP</div>
+
+<nav id="nav" aria-label="Разделы приложения">
+  <img class="mark" src="logo.svg" alt="">
+  <button data-go="#/" data-tab="home"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>Каталог</button>
+  <button data-go="#/search" data-tab="search"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>Поиск</button>
+  <button data-go="#/fav" data-tab="fav"><svg viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20Z"/></svg>Избранное</button>
+  <button data-go="#/cart" data-tab="cart"><svg viewBox="0 0 24 24"><path d="M5 7h14l-1.2 12.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>Корзина<span class="badge" id="cartBadge" hidden></span></button>
+  <button data-go="#/more" data-tab="more"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg>Настройки</button>
+</nav>
+
+<div id="app">
+  <header><div class="top" id="top"></div></header>
+  <main id="main"><div id="view"></div></main>
 </div>
-<main id="main"><div class="wrap" id="view"></div></main>
-<div id="toast" role="status"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script src="products.js"></script>
 <script src="docs.js"></script>
@@ -173,20 +238,25 @@ const store = {
 };
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
 const rub = n => Math.round(n).toLocaleString('ru-RU') + ' ₽';
-const pic = (src, cls = 'im') => `<div class="${cls}">${src ? `<img src="${esc(src)}" alt="" loading="lazy" onerror="this.remove()">` : ''}</div>`;
+const enc = encodeURIComponent;
 const DOCS = { invoice: 'Счёт на оплату', quote: 'Коммерческое предложение' };
 // GitHub Actions refreshes this file every hour from the Sanjet stock files (tools/stock.py).
 const STOCK_URL = 'https://ronineditingwork-bro.github.io/Whitecross_apk/stock.json';
-// Finish swatches, as on wcross.ru
-const FINISH = {
-  'Хром': 'linear-gradient(135deg,#fafafa,#8e8e8e)', 'Золото': 'linear-gradient(135deg,#f6dc84,#b38a26)',
-  'Золото брашированное': 'linear-gradient(135deg,#e4c98f,#9c7a42)', 'Никель брашированный': 'linear-gradient(135deg,#d9d4cc,#8a857e)',
-  'Оружейная сталь': 'linear-gradient(135deg,#7a7a78,#353534)', 'Черный матовый': '#151515', 'Медь брашированная': 'linear-gradient(135deg,#e7a885,#9b563a)',
-  'Медь': 'linear-gradient(135deg,#e7a885,#9b563a)', 'Бронза': 'linear-gradient(135deg,#b08458,#5a3c22)',
-  'Белый глянец': '#fff', 'Белый матовый': '#f0efec', 'Белый': '#fff', 'RAL матовый': 'conic-gradient(#c33,#e8b33a,#3a8f5c,#2f6fb5,#7b4fa0,#c33)',
-  'Черный/Белый матовый': 'linear-gradient(135deg,#151515 50%,#f0efec 50%)'
+const ICON = {
+  back: '<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
+  search: '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>',
+  heart: '<svg viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20Z"/></svg>'
 };
-const dot = c => `<span class="dot" style="background:${FINISH[c] || '#999'}"></span>`;
+// Finish swatches: metal colours drawn as small gradients
+const FINISH = {
+  'Хром': 'linear-gradient(135deg,#fdfdfd,#8c8c8c)', 'Золото': 'linear-gradient(135deg,#f6dc84,#b38a26)',
+  'Золото брашированное': 'linear-gradient(135deg,#e4c98f,#9c7a42)', 'Никель брашированный': 'linear-gradient(135deg,#dcd7cf,#8a857e)',
+  'Оружейная сталь': 'linear-gradient(135deg,#7a7a78,#353534)', 'Черный матовый': '#161616', 'Медь брашированная': 'linear-gradient(135deg,#e7a885,#9b563a)',
+  'Медь': 'linear-gradient(135deg,#e7a885,#9b563a)', 'Бронза': 'linear-gradient(135deg,#b08458,#5a3c22)',
+  'Белый глянец': '#fff', 'Белый матовый': '#f2f1ee', 'Белый': '#fff', 'RAL матовый': 'conic-gradient(#c33,#e8b33a,#3a8f5c,#2f6fb5,#7b4fa0,#c33)',
+  'Черный/Белый матовый': 'linear-gradient(135deg,#161616 50%,#f2f1ee 50%)'
+};
+const fin = c => FINISH[c] || '#999';
 
 const items = typeof PRODUCTS === 'undefined' ? [] : PRODUCTS;
 const byId = new Map(items.map(i => [i.id, i]));
@@ -200,20 +270,46 @@ let markup = store.get('markup', 0);
 let showPrices = store.get('showPrices', true);
 
 const sell = p => Math.round(p * (1 + markup / 100));
-const priceText = p => showPrices ? rub(sell(p)) : 'Цена по запросу';
+const priceText = p => showPrices ? rub(sell(p)) : 'по запросу';
 const inCart = id => (cart.find(l => l.id === id) || {}).qty || 0;
 const grp = i => i.cat.split(' / ')[0];
-const sub = i => i.cat.split(' / ').slice(1).join(' / ');
+const sub = i => i.cat.split(' / ')[1] || '';
 const color = i => i.props['Цвет'] || '';
+const thumb = i => `img/${i.id}.webp`;   // bundled by tools/thumbs.py
+const variantsOf = i => { const v = i.variants.map(n => byName.get(n)).filter(Boolean); return v.length > 1 ? v : [i]; };
 // Sanjet gives 1, 2, '>3' or 0 («под заказ») per warehouse; '>3' counts as 4 for sorting.
 const lvl = v => v === '>3' ? 4 : +v || 0;
 const left = i => stock && stock[i.art] ? lvl(stock[i.art].krd) + lvl(stock[i.art].msk) : 0;
-const where = v => v === '>3' ? 'больше 3' : v ? v + ' шт' : '—';
-const stockText = i => !stock ? '' : left(i) ? `Краснодар: ${where(stock[i.art].krd)} · Москва: ${where(stock[i.art].msk)}` : 'Под заказ';
-const subLabel = s => { const t = s.split(' / ').pop(); return t.charAt(0).toLowerCase() + t.slice(1); };
+const qtyText = v => v === '>3' ? 'больше 3' : v ? v + ' шт' : 'под заказ';
 
 function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 2400); }
-function goBack() { if (history.length > 1) history.back(); else location.hash = '#/'; }
+function keepScroll(fn) { const s = $('main').scrollTop; fn(); $('main').scrollTop = s; }
+
+function topbar(title, { back = true, search = true } = {}) {
+  $('top').innerHTML = `${back ? `<button class="iconbtn back" onclick="history.length > 1 ? history.back() : location.hash = '#/'" aria-label="Назад">${ICON.back}</button>` : `<img class="logo" src="logo.svg" alt="WHITECROSS"><span class="sp"></span>`}
+    ${title ? `<h1 class="d">${esc(title)}</h1>` : ''}
+    ${search ? `<a class="iconbtn" href="#/search" aria-label="Поиск">${ICON.search}</a>` : ''}`;
+}
+
+function stockLine(i) {
+  if (!stock) return '';
+  const s = stock[i.art] || {};
+  if (!left(i)) return `<div class="stk"><span>под заказ</span></div>`;
+  return `<div class="stk"><span class="${lvl(s.krd) ? 'in' : ''}">Краснодар ${s.krd === '>3' ? '3+' : s.krd || 0}</span><span class="${lvl(s.msk) ? 'in' : ''}">Москва ${s.msk === '>3' ? '3+' : s.msk || 0}</span></div>`;
+}
+
+function card(i) {
+  const n = inCart(i.id), vars = variantsOf(i);
+  return `<article class="card">
+    <a class="ph" href="#/p/${enc(i.id)}" aria-label="${esc(i.name)}"><img src="${thumb(i)}" alt="" loading="lazy" onerror="this.remove()">${i.sale ? '<span class="tag">акция</span>' : i.new ? '<span class="tag">новинка</span>' : ''}</a>
+    <div class="fins">${vars.slice(0, 8).map(v => `<i class="${v.id === i.id ? 'cur' : ''}" style="background:${fin(color(v))}" title="${esc(color(v))}"></i>`).join('')}</div>
+    <a class="nm" href="#/p/${enc(i.id)}">${esc(i.name.replace(/\s*WHITECROSS\s*/, ' '))}</a>
+    <div class="buy"><span class="pr">${priceText(i.price)}</span>
+      ${n ? `<span class="step"><button data-minus="${esc(i.id)}" aria-label="Убрать одну">−</button><b>${n}</b><button data-plus="${esc(i.id)}" aria-label="Добавить ещё">+</button></span>`
+          : `<button class="add" data-plus="${esc(i.id)}" aria-label="В корзину">+</button>`}</div>
+    ${stockLine(i)}
+  </article>`;
+}
 
 function sorted(list) {
   const a = list.filter(i => !onlyStock || !stock || left(i) > 0);
@@ -221,128 +317,145 @@ function sorted(list) {
                 priceDesc: (x, y) => y.price - x.price, stock: (x, y) => left(y) - left(x) }[sortMode];
   return a.sort(cmp);
 }
-
-function card(i) {
-  const n = inCart(i.id);
-  return `<div class="card">
-    <a href="#/p/${encodeURIComponent(i.id)}" style="text-decoration:none">${pic(i.photos[0])}<div class="nm">${esc(i.name)}</div></a>
-    <div class="pr">${priceText(i.price)}</div>
-    ${stock ? `<div class="st ${left(i) ? 'in' : ''}">${stockText(i)}</div>` : ''}
-    <div class="act">
-      <button class="heart ${fav.has(i.id) ? 'on' : ''}" data-fav="${esc(i.id)}" aria-label="В избранное">${fav.has(i.id) ? '♥' : '♡'}</button>
-      ${n ? `<span class="qty"><button class="round" data-minus="${esc(i.id)}" aria-label="Убрать">−</button><b>${n}</b><button class="round dark" data-plus="${esc(i.id)}" aria-label="Добавить">+</button></span>`
-          : `<button class="round dark" data-plus="${esc(i.id)}" aria-label="В корзину">+</button>`}
-    </div>
-  </div>`;
-}
-
-function grid(list, empty) {
+function listing(list, empty) {
   const shown = sorted(list);
-  const sortName = { name: 'по названию', priceAsc: 'сначала дешевле', priceDesc: 'сначала дороже', stock: 'по наличию' }[sortMode];
-  return `<div class="tools"><button id="sortBtn">⇅ ${sortName}</button>${stock ? `<button id="stockBtn" class="${onlyStock ? 'on' : ''}">в наличии</button>` : ''}</div>
-    ${shown.length ? `<div class="grid">${shown.slice(0, 300).map(card).join('')}</div>${shown.length > 300 ? '<p class="empty">Показаны первые 300 — выберите подраздел или цвет.</p>' : ''}`
-      : `<p class="empty">${onlyStock ? 'Нет товаров в наличии. Нажмите «в наличии», чтобы показать все.' : empty}</p>`}`;
+  return `<div class="bar"><span>${shown.length} ${plural(shown.length, ['товар', 'товара', 'товаров'])}</span><span class="sp"></span>
+      ${stock ? `<button class="toggle ${onlyStock ? 'on' : ''}" id="stockBtn">В наличии</button>` : ''}
+      <select id="sortSel" aria-label="Сортировка">${[['name', 'По названию'], ['priceAsc', 'Дешевле'], ['priceDesc', 'Дороже']].concat(stock ? [['stock', 'По наличию']] : []).map(([k, l]) => `<option value="${k}" ${k === sortMode ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+    ${shown.length ? `<div class="grid">${shown.slice(0, 240).map(card).join('')}</div>${shown.length > 240 ? '<p class="empty">Показаны первые 240. Выберите подраздел или отделку, чтобы увидеть остальные.</p>' : ''}`
+      : `<p class="empty">${onlyStock ? 'В наличии ничего нет. Отключите «В наличии», чтобы увидеть товары под заказ.' : empty}</p>`}`;
 }
-function bindTools() {
-  if ($('sortBtn')) $('sortBtn').onclick = () => {
-    const opts = ['name', 'priceAsc', 'priceDesc'].concat(stock ? ['stock'] : []);
-    sortMode = opts[(opts.indexOf(sortMode) + 1) % opts.length]; store.set('sort', sortMode); keepScroll(route);
-  };
+function bindListing() {
+  if ($('sortSel')) $('sortSel').onchange = e => { sortMode = e.target.value; store.set('sort', sortMode); keepScroll(route); };
   if ($('stockBtn')) $('stockBtn').onclick = () => { onlyStock = !onlyStock; store.set('onlyStock', onlyStock); keepScroll(route); };
 }
-function keepScroll(fn) { const s = $('main').scrollTop; fn(); $('main').scrollTop = s; }
+const plural = (n, f) => { n = Math.abs(n) % 100; const m = n % 10; return n > 10 && n < 20 ? f[2] : m === 1 ? f[0] : m > 1 && m < 5 ? f[1] : f[2]; };
 
 // ---------- screens ----------
 function home() {
-  if (!items.length) { $('view').innerHTML = '<p class="empty">Каталог не загрузился.</p>'; return; }
+  topbar('', { back: false, search: false });
   const groups = [...new Set(items.map(grp))];
-  $('view').innerHTML = groups.map(g => {
-    const list = items.filter(i => grp(i) === g);
-    const subs = [...new Set(list.map(i => sub(i).split(' / ')[0]).filter(Boolean))];
-    const cover = l => (l.find(i => i.photos[0] && /Хром/.test(color(i))) || l.find(i => i.photos[0]) || { photos: [] }).photos[0];
-    const tiles = subs.length ? subs.map(s => [s, list.filter(i => sub(i).split(' / ')[0] === s)]) : [['', list]];
-    return `<section class="sect"><h2 class="h">${esc(g)}</h2>
-      <div class="subs">${tiles.map(([s, l]) => `<button class="sub" data-go="#/g/${encodeURIComponent(g + (s ? '|' + s : ''))}">${pic(cover(l))}<span>${esc(s ? subLabel(s) : 'все модели')} →</span></button>`).join('')}</div>
-      <button class="pill" data-go="#/g/${encodeURIComponent(g)}">В каталог · ${list.length}</button></section>`;
-  }).join('') + `<div class="foot-black">Ванная комната как искусство<small>${items.length} товаров${stock ? ' · остатки Краснодар и Москва' : ''}</small></div>`;
+  const cover = g => items.find(i => grp(i) === g && /Хром|Белый/.test(color(i))) || items.find(i => grp(i) === g);
+  const when = store.get('stockAt', 0);
+  const shelf = (title, list, link) => list.length ? `<h2 class="sec d">${title}</h2><div class="shelf">${list.slice(0, 14).map(card).join('')}</div>` : '';
+  $('view').innerHTML = `
+    <div class="hero">
+      <form id="heroSearch" role="search"><input id="hq" type="search" enterkeyhint="search" placeholder="Артикул или название" aria-label="Поиск по каталогу"><button class="iconbtn" aria-label="Найти">${ICON.search}</button></form>
+      <div class="stamp">${items.length} товаров WHITECROSS${stock && when ? `, остатки на ${new Date(when).toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}` : ''}</div>
+    </div>
+    <div class="page">
+      <h2 class="sec d">Разделы</h2>
+      <div class="groups">${groups.map(g => { const c = cover(g); return `<a class="group" href="#/g/${enc(g)}"><img src="${thumb(c)}" alt="" onerror="this.remove()"><span class="gname"><b>${esc(g)}</b><small>${items.filter(i => grp(i) === g).length} товаров</small></span></a>`; }).join('')}</div>
+      ${shelf('Новинки', items.filter(i => i.new))}
+      ${shelf('Акция', items.filter(i => i.sale))}
+    </div>`;
+  $('heroSearch').onsubmit = e => { e.preventDefault(); const q = $('hq').value.trim(); if (q) location.hash = '#/search/' + enc(q); };
 }
 
 function groupScreen(arg) {
   const [g, s = '', c = ''] = arg.split('|');
+  topbar(g);
   const base = items.filter(i => grp(i) === g);
-  const subs = [...new Set(base.map(i => sub(i).split(' / ')[0]).filter(Boolean))];
-  const inSub = s ? base.filter(i => sub(i).split(' / ')[0] === s) : base;
+  const subs = [...new Set(base.map(sub).filter(Boolean))];
+  const inSub = s ? base.filter(i => sub(i) === s) : base;
   const colors = [...new Set(inSub.map(color).filter(Boolean))];
   const list = c ? inSub.filter(i => color(i) === c) : inSub;
-  const link = (s2, c2) => '#/g/' + encodeURIComponent([g, s2, c2].join('|').replace(/\|+$/, ''));
-  $('view').innerHTML = `<div class="ghead">
-      <h1 class="h">${esc(s ? s.split(' / ').pop() : g)}</h1><div class="cnt">${list.length} товаров</div>
-      ${subs.length > 1 ? `<div class="chips"><button class="${s ? '' : 'on'}" data-go="${link('', c)}">все</button>${subs.map(x => `<button class="${x === s ? 'on' : ''}" data-go="${link(x, '')}">${esc(subLabel(x))}</button>`).join('')}</div>` : ''}
-      ${colors.length > 1 ? `<div class="sw">${colors.map(x => `<button class="${x === c ? 'on' : ''}" data-go="${link(s, x === c ? '' : x)}">${dot(x)}${esc(x)}</button>`).join('')}</div>` : ''}
-    </div>${grid(list, 'В этом разделе нет товаров.')}`;
-  bindTools();
+  const link = (s2, c2) => '#/g/' + enc([g, s2, c2].join('|').replace(/\|+$/, ''));
+  $('view').innerHTML = `${subs.length > 1 || colors.length > 1 ? `<div class="ghead">
+      ${subs.length > 1 ? `<div class="chips">${[['', 'Все']].concat(subs.map(x => [x, x])).map(([x, l]) => `<button class="${x === s ? 'on' : ''}" data-go="${link(x, x === s ? c : '')}">${esc(l)}</button>`).join('')}</div>` : ''}
+      ${colors.length > 1 ? `<div class="finishes" role="group" aria-label="Отделка">${colors.map(x => `<button class="${x === c ? 'on' : ''}" data-go="${link(s, x === c ? '' : x)}" aria-pressed="${x === c}"><span class="dot" style="background:${fin(x)}"></span>${esc(x)}</button>`).join('')}</div>` : ''}
+    </div>` : ''}
+    <div class="page">${listing(list, 'В этом разделе пока нет товаров.')}</div>`;
+  bindListing();
 }
 
 function searchScreen(q) {
-  const words = q.toLowerCase().split(/\s+/);
-  const list = items.filter(i => { const t = (i.name + ' ' + i.art).toLowerCase(); return words.every(w => t.includes(w)); });
-  $('view').innerHTML = `<div class="ghead"><h1 class="h">Поиск</h1><div class="cnt">«${esc(q)}» · ${list.length}</div></div>${grid(list, 'Ничего не найдено. Попробуйте артикул или часть названия.')}`;
-  bindTools();
+  topbar('Поиск', { search: false });
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+  const list = words.length ? items.filter(i => { const t = (i.name + ' ' + i.art).toLowerCase(); return words.every(w => t.includes(w)); }) : [];
+  $('view').innerHTML = `<div class="hero"><form id="sForm" role="search"><input id="sq" type="search" enterkeyhint="search" placeholder="Артикул или название" value="${esc(q)}" aria-label="Поиск по каталогу"><button class="iconbtn" aria-label="Найти">${ICON.search}</button></form></div>
+    <div class="page">${words.length ? listing(list, 'Ничего не нашлось. Проверьте артикул или введите часть названия, например «Cubo».') : '<p class="empty">Введите артикул, например XI1411CR, или часть названия.</p>'}</div>`;
+  $('sForm').onsubmit = e => { e.preventDefault(); $('sq').blur(); location.replace('#/search/' + enc($('sq').value.trim())); };
+  if (!words.length) setTimeout(() => $('sq').focus(), 50);
+  bindListing();
 }
 
 function favScreen() {
+  topbar('Избранное');
   const list = items.filter(i => fav.has(i.id));
-  $('view').innerHTML = `<div class="ghead"><h1 class="h">Избранное</h1><div class="cnt">${list.length} товаров</div></div>${grid(list, 'Отмечайте товары сердцем — они появятся здесь.')}`;
-  bindTools();
+  $('view').innerHTML = `<div class="page">${list.length ? listing(list, '') : '<p class="empty">Нажмите на сердце в карточке товара, чтобы сохранить его здесь.</p>'}</div>`;
+  bindListing();
 }
 
 function detail(id) {
   const item = byId.get(id);
-  if (!item) { $('view').innerHTML = '<p class="empty">Товар не найден.</p>'; return; }
-  const variants = item.variants.map(n => byName.get(n)).filter(Boolean);
-  $('view').innerHTML = `<div class="pwrap"><div>
-    <div class="gallery">${(item.photos.length ? item.photos : ['']).map(p => `<div>${p ? `<img src="${esc(p)}" alt="" loading="lazy" onerror="this.remove()">` : ''}</div>`).join('')}</div>
-    ${item.photos.length > 1 ? `<p class="hint" style="text-align:center;margin:8px 0 0">${item.photos.length} фото — листайте</p>` : ''}
-  </div><div>
+  topbar('');
+  if (!item) { $('view').innerHTML = '<p class="empty">Этого товара больше нет в каталоге.</p>'; return; }
+  const vars = variantsOf(item), s = stock && stock[item.art];
+  // first slide is the bundled picture, so the gallery is never empty; originals from sanjet.ru follow when reachable
+  const slides = [`<div><img src="${thumb(item)}" alt="${esc(item.name)}"></div>`].concat(item.photos.slice(1).map(p => `<div><img src="${esc(p)}" alt="" loading="lazy" onerror="this.parentNode.remove(); galleryDots()"></div>`));
+  $('view').innerHTML = `<div class="page"><div class="pd">
+    <div class="gal"><div class="gallery" id="gal">${slides.join('')}</div><div class="dots" id="gdots"></div></div>
     <div class="pinfo">
-      <div class="h">${esc(item.art)}</div>
-      <div class="nm">${esc(item.name)}</div>
+      <div class="art">Артикул ${esc(item.art)}</div>
+      <h2 class="d">${esc(item.name.replace(/\s*WHITECROSS\s*/, ' '))}</h2>
       <div class="pr">${priceText(item.price)}</div>
-      ${stock ? `<div class="st ${left(item) ? 'in' : ''}" style="font-size:13px;margin-top:4px">${stockText(item)}</div>` : ''}
-      ${variants.length > 1 ? `<div class="sw">${variants.map(v => `<button class="${v.id === item.id ? 'on' : ''}" data-go="#/p/${encodeURIComponent(v.id)}">${dot(color(v))}${esc(color(v) || v.art)}</button>`).join('')}</div>` : ''}
-    </div>
-    <div class="addrow">
-      <input id="addQty" type="number" inputmode="numeric" min="1" step="1" value="1" aria-label="Количество">
-      <button class="pill dark wide" id="addBtn">В корзину</button>
-    </div>
-    <div style="text-align:center"><button class="heart ${fav.has(item.id) ? 'on' : ''}" data-fav="${esc(item.id)}" aria-label="В избранное" style="width:auto;font-size:15px">${fav.has(item.id) ? '♥ в избранном' : '♡ в избранное'}</button></div>
-    <div class="block">
-      <h3 class="h">Характеристики</h3>
-      <div class="spec"><div>Раздел</div><div>${esc(item.cat)}</div>${Object.entries(item.props).map(([k, v]) => `<div>${esc(k)}</div><div>${esc(v)}</div>`).join('')}</div>
-      ${item.desc ? `<h3 class="h">Описание</h3><div class="desc">${esc(item.desc)}</div>` : ''}
+      ${stock ? `<div class="wh"><div>Краснодар<b class="${lvl(s && s.krd) ? 'in' : ''}">${qtyText(s && s.krd)}</b></div><div>Москва<b class="${lvl(s && s.msk) ? 'in' : ''}">${qtyText(s && s.msk)}</b></div></div>` : ''}
+      ${vars.length > 1 ? `<div class="pfin" role="group" aria-label="Отделка">${vars.map(v => `<a class="${v.id === item.id ? 'on' : ''}" href="#/p/${enc(v.id)}" ${v.id === item.id ? 'aria-current="true"' : ''}><span class="dot" style="background:${fin(color(v))}"></span>${esc(color(v) || v.art)}</a>`).join('')}</div>` : ''}
+      <div class="buyrow">
+        <div class="qtybox"><button id="qm" aria-label="Меньше">−</button><input id="addQty" type="number" inputmode="numeric" min="1" value="1" aria-label="Количество"><button id="qp" aria-label="Больше">+</button></div>
+        <button class="btn grow" id="addBtn">В корзину</button>
+      </div>
+      <button class="favline ${fav.has(item.id) ? 'on' : ''}" data-fav="${esc(item.id)}">${ICON.heart}${fav.has(item.id) ? 'В избранном' : 'Добавить в избранное'}</button>
+      <div class="specs">
+        <h3 class="d">Характеристики</h3>
+        <dl><dt>Раздел</dt><dd>${esc(item.cat)}</dd>${Object.entries(item.props).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>
+      </div>
+      ${item.desc ? `<div class="specs"><h3 class="d">Описание</h3><div class="desc">${esc(item.desc)}</div></div>` : ''}
     </div>
   </div></div>`;
-  $('addBtn').onclick = () => addToCart(item, Math.max(1, parseInt($('addQty').value) || 1));
+  const q = $('addQty');
+  $('qm').onclick = () => q.value = Math.max(1, (parseInt(q.value) || 1) - 1);
+  $('qp').onclick = () => q.value = (parseInt(q.value) || 0) + 1;
+  $('addBtn').onclick = () => addToCart(item, Math.max(1, parseInt(q.value) || 1));
+  $('gal').onscroll = () => galleryDots();
+  galleryDots();
+}
+function galleryDots() {
+  const g = $('gal'); if (!g) return;
+  const n = g.children.length, cur = Math.round(g.scrollLeft / (g.clientWidth || 1));
+  $('gdots').innerHTML = n > 1 ? Array.from({ length: n }, (_, k) => `<i class="${k === cur ? 'on' : ''}"></i>`).join('') : '';
 }
 
 function cartScreen() {
-  const head = `<div class="ghead"><h1 class="h">Корзина</h1><div class="cnt">${cart.length} позиций</div></div>`;
-  if (!cart.length) { $('view').innerHTML = head + '<p class="empty">Корзина пуста. Нажмите «+» у товара или «В корзину» в карточке.</p>'; return; }
-  const total = cart.reduce((s, l) => s + l.qty * l.price, 0);
-  $('view').innerHTML = head + `<div class="page">
-    ${cart.map((l, i) => { const it = byId.get(l.id) || { photos: [] }; return `
-      <div class="cline">
-        <a href="#/p/${encodeURIComponent(l.id)}">${pic(it.photos[0])}</a>
-        <div class="mid"><b>${esc(l.art)}</b>${esc(l.name)}<br>
-          <input type="number" inputmode="decimal" min="0" step="0.01" value="${l.price}" data-price="${i}" aria-label="Цена за штуку, ₽"> ₽</div>
-        <div class="qty"><button class="round dark" data-cplus="${i}" aria-label="Больше">+</button><b>${l.qty}</b><button class="round" data-cminus="${i}" aria-label="Меньше">−</button></div>
+  topbar('Корзина');
+  if (!cart.length) { $('view').innerHTML = '<p class="empty">Корзина пуста. Добавьте товары кнопкой «+» в каталоге, затем сделайте из них КП или счёт.</p>'; return; }
+  const total = cart.reduce((s, l) => s + l.qty * l.price, 0), pcs = cart.reduce((s, l) => s + l.qty, 0);
+  $('view').innerHTML = `<div class="page"><div class="cartwrap">
+    <div>${cart.map((l, i) => { const it = byId.get(l.id); return `
+      <div class="line">
+        <a class="ph" href="#/p/${enc(l.id)}">${it ? `<img src="${thumb(it)}" alt="" onerror="this.remove()">` : ''}</a>
+        <div>
+          <div class="t"><b>${esc(l.art)}</b>${esc(l.name)}</div>
+          <div class="ctl">
+            <label class="price" style="margin:0">Цена <input type="number" inputmode="decimal" min="0" step="0.01" value="${l.price}" data-price="${i}" aria-label="Цена за штуку, ₽"> ₽</label>
+            <span class="step"><button data-cminus="${i}" aria-label="Меньше">−</button><b>${l.qty}</b><button data-cplus="${i}" aria-label="Больше">+</button></span>
+            <span class="sum">${rub(l.qty * l.price)}</span>
+          </div>
+        </div>
       </div>`; }).join('')}
-    <div class="total h">Итого: ${rub(total)}</div>
-    <div class="two"><button class="pill line wide" data-go="#/doc/quote">КП</button><button class="pill dark wide" data-go="#/doc/invoice">Счёт</button></div>
-    <p style="text-align:center"><button class="pill line" id="clearCart" style="height:38px;font-size:13px">Очистить корзину</button></p>
-  </div>`;
+      <button class="linkbtn" id="clearCart">Очистить корзину</button>
+    </div>
+    <aside class="summary">
+      <div class="row"><span>Позиций</span><span>${cart.length}</span></div>
+      <div class="row"><span>Штук</span><span>${pcs}</span></div>
+      <div class="tot"><span>Итого</span><b>${rub(total)}</b></div>
+      <button class="btn" data-go="#/doc/quote">Сделать КП</button>
+      <button class="btn ghost" data-go="#/doc/invoice">Выставить счёт</button>
+    </aside>
+  </div></div>`;
   const view = $('view');
-  view.querySelectorAll('[data-price]').forEach(el => el.onchange = () => { const p = parseFloat(el.value); if (p >= 0) cart[el.dataset.price].price = p; saveCart(); cartScreen(); });
+  view.querySelectorAll('[data-price]').forEach(el => el.onchange = () => { const p = parseFloat(el.value); if (p >= 0) cart[el.dataset.price].price = p; saveCart(); keepScroll(cartScreen); });
   view.querySelectorAll('[data-cplus]').forEach(b => b.onclick = () => { cart[b.dataset.cplus].qty++; saveCart(); keepScroll(cartScreen); });
   view.querySelectorAll('[data-cminus]').forEach(b => b.onclick = () => { const l = cart[b.dataset.cminus]; if (--l.qty <= 0) cart.splice(+b.dataset.cminus, 1); saveCart(); keepScroll(cartScreen); });
   $('clearCart').onclick = () => { if (confirm('Очистить корзину?')) { cart = []; saveCart(); cartScreen(); } };
@@ -351,36 +464,39 @@ function cartScreen() {
 // «Счёт на оплату» or «Коммерческое предложение»: options, seller, client, then «Создать PDF».
 function docScreen(kind) {
   if (!cart.length || !DOCS[kind]) { location.replace('#/cart'); return; }
-  const total = cart.reduce((s, l) => s + l.qty * l.price, 0), pcs = cart.reduce((s, l) => s + l.qty, 0);
+  topbar(kind === 'quote' ? 'КП' : 'Счёт');
   const si = Math.min(store.get('seller', 0), SELLERS.length - 1);
   const noKey = i => `no:${kind}:${SELLERS[i].inn}`;
   const opts = store.get('docOpts', { photos: true, arts: true });
   const b = store.get('buyer', {});
+  const total = cart.reduce((s, l) => s + l.qty * l.price, 0);
   const field = (id, label, type = 'text', mode = '') => `<label for="b_${id}">${label}</label><input id="b_${id}" type="${type}" ${mode ? `inputmode="${mode}"` : ''} value="${esc(b[id] || '')}">`;
   const sw = (id, title, sub) => `<label class="switch"><span>${title}<small>${sub}</small></span><input type="checkbox" id="o_${id}" ${opts[id] ? 'checked' : ''}></label>`;
-  $('view').innerHTML = `<div class="ghead"><h1 class="h">${DOCS[kind]}</h1><div class="cnt">${cart.length} поз. · ${pcs} шт. · ${rub(total)}</div></div>
-   <div class="page">
-    <div class="panel">${sw('photos', 'Фото товаров', 'Картинка у каждой позиции')}${sw('arts', 'Артикулы', 'Выключите, чтобы клиент не видел артикулы')}</div>
-    <h2 class="h ptitle">Продавец</h2>
-    <div class="panel">
-      <label for="seller">Организация</label>
-      <select id="seller">${SELLERS.map((s, i) => `<option value="${i}" ${i === si ? 'selected' : ''}>${s.kpp ? '' : 'ИП '}${esc(s.short)} · ${s.vatRate ? 'НДС ' + s.vatRate + '%' : 'без НДС'}</option>`).join('')}</select>
-      <div class="two">
-        <div><label for="docNo">${kind === 'quote' ? 'КП' : 'Счёт'} №</label><input id="docNo" type="number" inputmode="numeric" min="1" value="${store.get(noKey(si), 1)}"></div>
-        <div><label for="docDate">Дата</label><input id="docDate" type="date" value="${new Date().toLocaleDateString('sv')}"></div>
+  $('view').innerHTML = `<div class="page">
+    <div class="docwrap">
+      <div>
+        <div class="panel"><h3 class="d">${DOCS[kind]}</h3>
+          <p class="hint" style="margin:4px 0 0">${cart.length} ${plural(cart.length, ['позиция', 'позиции', 'позиций'])} на ${rub(total)}</p>
+          <label for="seller">Продавец</label>
+          <select id="seller">${SELLERS.map((s, i) => `<option value="${i}" ${i === si ? 'selected' : ''}>${s.kpp ? '' : 'ИП '}${esc(s.short)}, ${s.vatRate ? 'НДС ' + s.vatRate + '%' : 'без НДС'}</option>`).join('')}</select>
+          <div class="two">
+            <div><label for="docNo">Номер</label><input id="docNo" type="number" inputmode="numeric" min="1" value="${store.get(noKey(si), 1)}"></div>
+            <div><label for="docDate">Дата</label><input id="docDate" type="date" value="${new Date().toLocaleDateString('sv')}"></div>
+          </div>
+          ${kind === 'quote' ? `<label for="valid">Срок действия, дней</label><input id="valid" type="number" inputmode="numeric" min="1" value="${store.get('validDays', 14)}">` : ''}
+        </div>
+        <div class="panel">${sw('photos', 'Фото товаров', 'Картинка у каждой позиции')}${sw('arts', 'Артикулы', 'Выключите, чтобы клиент не видел артикулы')}</div>
       </div>
-      ${kind === 'quote' ? `<label for="valid">Действительно, дней</label><input id="valid" type="number" inputmode="numeric" min="1" value="${store.get('validDays', 14)}">` : ''}
+      <div class="panel"><h3 class="d">${kind === 'quote' ? 'Клиент' : 'Покупатель'}</h3>
+        ${field('name', 'Имя или компания')}
+        <div class="two"><div>${field('inn', 'ИНН', 'text', 'numeric')}</div><div>${field('kpp', 'КПП', 'text', 'numeric')}</div></div>
+        ${field('address', 'Адрес')}
+        ${field('phone', 'Телефон', 'tel')}
+        <label for="b_comment">Комментарий в начале документа</label><textarea id="b_comment" rows="3">${esc(store.get('docComment', ''))}</textarea>
+      </div>
     </div>
-    <h2 class="h ptitle">${kind === 'quote' ? 'Клиент' : 'Покупатель'}</h2>
-    <div class="panel">
-      ${field('name', 'Кому (имя или компания)')}
-      <div class="two"><div>${field('inn', 'ИНН', 'text', 'numeric')}</div><div>${field('kpp', 'КПП', 'text', 'numeric')}</div></div>
-      ${field('address', 'Адрес')}
-      ${field('phone', 'Телефон', 'tel')}
-      <label for="b_comment">Комментарий в начале документа</label><textarea id="b_comment" rows="2">${esc(store.get('docComment', ''))}</textarea>
-    </div>
-    <div class="sticky"><button class="pill dark wide" id="pdfBtn">Создать PDF</button></div>
-   </div>`;
+    <div class="sticky"><button class="btn full" id="pdfBtn">Создать PDF</button></div>
+  </div>`;
   const view = $('view');
   view.querySelectorAll('[id^="b_"]').forEach(el => el.oninput = () => {
     if (el.id === 'b_comment') return store.set('docComment', el.value);
@@ -391,13 +507,14 @@ function docScreen(kind) {
   $('seller').onchange = () => { store.set('seller', +$('seller').value); $('docNo').value = store.get(noKey(+$('seller').value), 1); };
   $('pdfBtn').onclick = () => {
     const i = +$('seller').value, no = parseInt($('docNo').value) || 1, seller = SELLERS[i];
-    const lines = cart.map(l => ({ ...l, img: ((byId.get(l.id) || {}).photos || [])[0] }));
+    // bundled pictures: the PDF is drawn from the app's own files, so photos appear without internet
+    const lines = cart.map(l => ({ ...l, img: byId.has(l.id) ? thumb(byId.get(l.id)) : '' }));
     const args = { kind, seller, buyer: store.get('buyer', {}), comment: $('b_comment').value.trim(), lines, no,
       date: $('docDate').value, validDays: $('valid') ? $('valid').value : 0, opts: store.get('docOpts', { photos: true, arts: true }) };
     const name = `${kind === 'quote' ? 'КП' : 'Счёт'} ${no} от ${args.date} ${seller.short}`.replace(/[«»"]/g, '').replace(/[.\s]+$/, '');
     if (window.Android) { $('pdfBtn').disabled = true; $('pdfBtn').textContent = 'Создаём PDF…'; window.Android.pdf(buildDoc(args), name); }
     else {
-      try { localStorage.setItem('docHtml', buildDoc({ ...args, opts: { ...args.opts, toolbar: true } })); } catch (e) { return toast('Не удалось открыть документ: ' + e.message); }
+      try { localStorage.setItem('docHtml', buildDoc({ ...args, opts: { ...args.opts, toolbar: true } })); } catch (e) { return toast('Документ не открылся: ' + e.message); }
       location.href = 'doc.html';
     }
     store.set(noKey(i), no + 1);
@@ -408,38 +525,37 @@ function docScreen(kind) {
 // Called by MainActivity when the PDF is saved (Downloads/WHITECROSS) and the «Send» sheet is open.
 window.onPdf = (err, file) => {
   if ($('pdfBtn')) { $('pdfBtn').disabled = false; $('pdfBtn').textContent = 'Создать PDF'; }
-  toast(err ? 'Не удалось создать PDF: ' + err : `PDF сохранён: Загрузки/WHITECROSS/${file}`);
+  toast(err ? 'PDF не создан: ' + err : `PDF сохранён в «Загрузки/WHITECROSS»: ${file}`);
 };
 
 function moreScreen() {
+  topbar('Настройки');
   const when = store.get('stockAt', 0);
-  $('view').innerHTML = `<div class="ghead"><h1 class="h">Настройки</h1></div><div class="page">
-    <h2 class="h ptitle">Остатки</h2>
-    <div class="panel"><p class="hint" style="margin:10px 0">${stock ? `Краснодар и Москва, обновлено ${new Date(when).toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}. Склад Sanjet пересчитывается каждый час.` : 'Остатки ещё не загружены — нужен интернет.'}</p>
-      <button class="pill dark wide" id="resync">↻ Обновить остатки</button></div>
-    <h2 class="h ptitle">Цены</h2>
-    <div class="panel">
-      <label class="switch">Показывать цены <input type="checkbox" id="showPrices" ${showPrices ? 'checked' : ''}></label>
-      <label for="markup">Скидка / наценка, % (например −5 или 10)</label>
+  $('view').innerHTML = `<div class="page"><div class="docwrap">
+    <div class="panel"><h3 class="d">Остатки</h3>
+      <p class="hint">${stock ? `Краснодар и Москва, загружены ${new Date(when).toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}. Склад Sanjet пересчитывается каждый час.` : 'Остатки ещё не загружены. Подключитесь к интернету и нажмите «Обновить остатки».'}</p>
+      <button class="btn full" id="resync">Обновить остатки</button></div>
+    <div class="panel"><h3 class="d">Цены</h3>
+      <label class="switch">Показывать цены<input type="checkbox" id="showPrices" ${showPrices ? 'checked' : ''}></label>
+      <label for="markup">Скидка или наценка, % (например −5 или 10)</label>
       <input id="markup" type="number" inputmode="decimal" step="1" value="${markup || ''}" placeholder="0">
-      <p><button class="pill line wide" id="applyMarkup">Применить</button></p>
-      <p class="hint">Наценка меняет цены в каталоге и цену товаров, которые вы добавляете в корзину после этого.</p>
-    </div>
-    <p class="hint" style="margin-top:24px">WHITECROSS · AMANA GROUP · ${items.length} товаров, розничные цены Sanjet.<br>Документы от: ${SELLERS.map(s => esc(s.short)).join(', ')}.</p>
-  </div>`;
+      <p><button class="btn ghost full" id="applyMarkup">Применить</button></p>
+      <p class="hint">Наценка меняет цены в каталоге и цену товаров, которые вы добавите в корзину после этого.</p></div>
+  </div>
+  <p class="hint" style="margin-top:22px">WHITECROSS для AMANA GROUP. ${items.length} товаров, розничные цены Sanjet. Документы от: ${SELLERS.map(s => esc(s.short)).join(', ')}.</p></div>`;
   $('resync').onclick = () => syncStock(true);
   $('showPrices').onchange = e => { showPrices = e.target.checked; store.set('showPrices', showPrices); };
-  $('applyMarkup').onclick = () => { markup = parseFloat($('markup').value) || 0; store.set('markup', markup); toast('Цены обновлены'); };
+  $('applyMarkup').onclick = () => { markup = parseFloat($('markup').value) || 0; store.set('markup', markup); toast('Наценка применена'); };
 }
 
 // ---------- router (hash history, so the phone's Back button walks back through screens) ----------
 function route() {
   const [, kind, arg] = (location.hash || '#/').match(/^#\/(\w*)\/?(.*)$/) || [];
   const a = decodeURIComponent(arg || '');
-  $('back').hidden = !kind;
-  $('menu').classList.remove('on');
+  const tab = { search: 'search', fav: 'fav', cart: 'cart', doc: 'cart', more: 'more' }[kind] || 'home';
+  document.querySelectorAll('nav#nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
   if (kind === 'g') groupScreen(a);
-  else if (kind === 's') searchScreen(a);
+  else if (kind === 'search') searchScreen(a);
   else if (kind === 'p') detail(a);
   else if (kind === 'fav') favScreen();
   else if (kind === 'cart') cartScreen();
@@ -459,37 +575,29 @@ function addToCart(item, qty) {
   if (line) line.qty += qty; else cart.push({ id: item.id, art: item.art, name: item.name, qty, price: sell(item.price) });
   if (line && line.qty <= 0) cart.splice(cart.indexOf(line), 1);
   saveCart();
-  if (qty > 0) toast(`В корзине: ${inCart(item.id)} шт. · ${item.art}`);
+  if (qty > 0) toast(`Добавлено в корзину: ${item.art}, всего ${inCart(item.id)} шт.`);
 }
 
 function syncStock(manual) {
   return fetch(STOCK_URL, { cache: 'no-store' })
     .then(r => { if (!r.ok) throw new Error('сервер ответил ' + r.status); return r.json(); })
-    .then(s => { stock = s; store.set('stock', s); store.set('stockAt', Date.now()); if (manual) toast('Остатки обновлены'); if (!/^#\/(doc|cart|more)/.test(location.hash)) keepScroll(route); else if (manual) route(); },
+    .then(s => { stock = s; store.set('stock', s); store.set('stockAt', Date.now()); if (manual) toast('Остатки обновлены'); if (!/^#\/(doc|cart|more)/.test(location.hash) || manual) keepScroll(route); },
           e => { if (manual) toast('Остатки не обновились: ' + (e.message === 'Failed to fetch' ? 'нет интернета' : e.message)); });
 }
 
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-fav],[data-plus],[data-minus],[data-go]');
   if (!t) return;
-  if (t.dataset.fav) {
-    const id = t.dataset.fav;
-    fav.has(id) ? fav.delete(id) : fav.add(id);
-    store.set('fav', [...fav]);
-    keepScroll(route);
-  } else if (t.dataset.plus) { addToCart(byId.get(t.dataset.plus), 1); keepScroll(route); }
+  if (t.dataset.fav) { const id = t.dataset.fav; fav.has(id) ? fav.delete(id) : fav.add(id); store.set('fav', [...fav]); keepScroll(route); }
+  else if (t.dataset.plus) { addToCart(byId.get(t.dataset.plus), 1); keepScroll(route); }
   else if (t.dataset.minus) { addToCart(byId.get(t.dataset.minus), -1); keepScroll(route); }
-  else if (t.dataset.go !== undefined) { if ((location.hash || '#/') === t.dataset.go) route(); else location.hash = t.dataset.go; }
+  else if ((location.hash || '#/') === t.dataset.go) route(); else location.hash = t.dataset.go;
 });
-$('back').onclick = goBack;
-$('menuBtn').onclick = () => $('menu').classList.toggle('on');
-$('searchBtn').onclick = () => { $('searchRow').hidden = !$('searchRow').hidden; if (!$('searchRow').hidden) $('q').focus(); };
-$('searchForm').onsubmit = e => { e.preventDefault(); const q = $('q').value.trim(); if (q) { $('q').blur(); location.hash = '#/s/' + encodeURIComponent(q); } };
 
 // ---------- start ----------
 saveCart();
 route();
-setTimeout(() => $('splash').classList.add('hide'), 500);
+setTimeout(() => $('splash').classList.add('hide'), 450);
 syncStock(false);
 </script>
 </body>
