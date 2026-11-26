@@ -63,6 +63,8 @@
   .hero form { max-width:720px; display:flex; align-items:center; gap:8px; background:#fff; color:var(--ink); border-radius:999px; padding:0 6px 0 18px; }
   .hero input { border:0; min-height:52px; padding:0; border-radius:0; background:transparent; }
   .hero .stamp { color:var(--concrete); font-size:13px; margin-top:12px; }
+  .progress { height:6px; background:var(--stone); border-radius:3px; overflow:hidden; margin:14px 0 6px; }
+  .progress i { display:block; height:100%; background:#000; transition:width .3s; }
   h2.sec { font-size:18px; margin:28px 0 14px; }
   .groups { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; }
   .group { position:relative; display:block; aspect-ratio:4/5; background:var(--stone); border-radius:20px; overflow:hidden; padding:14px; }
@@ -242,6 +244,9 @@ const enc = encodeURIComponent;
 const DOCS = { invoice: 'Счёт на оплату', quote: 'Коммерческое предложение' };
 // GitHub Actions refreshes this file every hour from the Sanjet stock files (tools/stock.py).
 const STOCK_URL = 'https://ronineditingwork-bro.github.io/Whitecross_apk/stock.json';
+// Photo pack: built by .github/workflows/photos.yml, downloaded once by the Android app, then used offline.
+const PHOTOS_URL = `https://github.com/ronineditingwork-bro/Whitecross_apk/releases/download/photos/photos-${typeof PHOTOS_VER === 'undefined' ? '' : PHOTOS_VER}.zip`;
+const PHOTO_DIR = window.Android && window.Android.photoDir ? window.Android.photoDir() : '';
 const ICON = {
   back: '<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
   search: '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>',
@@ -268,6 +273,8 @@ let sortMode = store.get('sort', 'name');
 let onlyStock = store.get('onlyStock', false);
 let markup = store.get('markup', 0);
 let showPrices = store.get('showPrices', true);
+let photosVer = store.get('photosVer', '');   // version of the photo pack on this phone, '' = not downloaded
+let photoJob = null;                           // download progress in %, null when idle
 
 const sell = p => Math.round(p * (1 + markup / 100));
 const priceText = p => showPrices ? rub(sell(p)) : 'по запросу';
@@ -344,6 +351,7 @@ function home() {
       <div class="stamp">${items.length} товаров WHITECROSS${stock && when ? `, остатки на ${new Date(when).toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}` : ''}</div>
     </div>
     <div class="page">
+      ${PHOTO_DIR && photosVer !== PHOTOS_VER ? photoPanel() : ''}
       <h2 class="sec d">Разделы</h2>
       <div class="groups">${groups.map(g => { const c = cover(g); return `<a class="group" href="#/g/${enc(g)}"><img src="${thumb(c)}" alt="" onerror="this.remove()"><span class="gname"><b>${esc(g)}</b><small>${items.filter(i => grp(i) === g).length} товаров</small></span></a>`; }).join('')}</div>
       ${shelf('Новинки', items.filter(i => i.new))}
@@ -393,7 +401,9 @@ function detail(id) {
   if (!item) { $('view').innerHTML = '<p class="empty">Этого товара больше нет в каталоге.</p>'; return; }
   const vars = variantsOf(item), s = stock && stock[item.art];
   // first slide is the bundled picture, so the gallery is never empty; originals from sanjet.ru follow when reachable
-  const slides = [`<div><img src="${thumb(item)}" alt="${esc(item.name)}"></div>`].concat(item.photos.slice(1).map(p => `<div><img src="${esc(p)}" alt="" loading="lazy" onerror="this.parentNode.remove(); galleryDots()"></div>`));
+  const slides = photosVer && PHOTO_DIR
+    ? item.photos.map((_, k) => `<div><img src="${PHOTO_DIR}${item.id}-${k}.webp" alt="${k ? '' : esc(item.name)}" ${k ? 'loading="lazy" onerror="this.parentNode.remove(); galleryDots()"' : `onerror="this.onerror=null; this.src='${thumb(item)}'"`}></div>`)
+    : [`<div><img src="${thumb(item)}" alt="${esc(item.name)}"></div>`].concat(item.photos.slice(1).map(p => `<div><img src="${esc(p)}" alt="" loading="lazy" onerror="this.parentNode.remove(); galleryDots()"></div>`));
   $('view').innerHTML = `<div class="page"><div class="pd">
     <div class="gal"><div class="gallery" id="gal">${slides.join('')}</div><div class="dots" id="gdots"></div></div>
     <div class="pinfo">
@@ -528,6 +538,30 @@ window.onPdf = (err, file) => {
   toast(err ? 'PDF не создан: ' + err : `PDF сохранён в «Загрузки/WHITECROSS»: ${file}`);
 };
 
+// Photo pack panel: offered on the home screen until downloaded, always in Settings.
+function photoPanel() {
+  const outdated = photosVer && photosVer !== PHOTOS_VER;
+  const body = photoJob !== null
+    ? `<p class="hint">Скачиваем фото: ${photoJob}%. Не закрывайте приложение.</p><div class="progress"><i style="width:${photoJob}%"></i></div>`
+    : !photosVer ? `<p class="hint">Скачайте фото всех товаров один раз, и каталог будет работать без интернета. Это около 100 МБ, лучше по Wi-Fi.</p><button class="btn full" data-photos>Скачать фото</button>`
+    : outdated ? `<p class="hint">Каталог обновился. Скачайте новые фото, около 100 МБ.</p><button class="btn full" data-photos>Обновить фото</button>`
+    : `<p class="hint">Фото скачаны. Без интернета работает всё, кроме обновления остатков.</p><button class="btn ghost full" data-photos>Скачать фото заново</button>`;
+  return `<div class="panel" id="photoPanel"><h3 class="d">Фото для работы без интернета</h3>${body}</div>`;
+}
+function startPhotos() {
+  if (photoJob !== null || !window.Android) return;
+  photoJob = 0; refreshPhotoPanel();
+  window.Android.downloadPhotos(PHOTOS_URL);
+}
+function refreshPhotoPanel() { const el = $('photoPanel'); if (el) el.outerHTML = photoPanel(); }
+// Called by MainActivity while the pack downloads: percent, error text or null, finished.
+window.onPhotos = (pct, err, done) => {
+  if (err) { photoJob = null; toast('Фото не скачались: ' + err + '. Проверьте интернет и нажмите ещё раз.'); }
+  else if (done) { photoJob = null; photosVer = PHOTOS_VER; store.set('photosVer', photosVer); toast('Фото скачаны, приложение работает без интернета'); }
+  else photoJob = pct;
+  if (done && !location.hash.startsWith('#/more')) keepScroll(route); else refreshPhotoPanel();
+};
+
 function moreScreen() {
   topbar('Настройки');
   const when = store.get('stockAt', 0);
@@ -535,6 +569,7 @@ function moreScreen() {
     <div class="panel"><h3 class="d">Остатки</h3>
       <p class="hint">${stock ? `Краснодар и Москва, загружены ${new Date(when).toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}. Склад Sanjet пересчитывается каждый час.` : 'Остатки ещё не загружены. Подключитесь к интернету и нажмите «Обновить остатки».'}</p>
       <button class="btn full" id="resync">Обновить остатки</button></div>
+    ${PHOTO_DIR ? photoPanel() : ''}
     <div class="panel"><h3 class="d">Цены</h3>
       <label class="switch">Показывать цены<input type="checkbox" id="showPrices" ${showPrices ? 'checked' : ''}></label>
       <label for="markup">Скидка или наценка, % (например −5 или 10)</label>
@@ -586,8 +621,9 @@ function syncStock(manual) {
 }
 
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-fav],[data-plus],[data-minus],[data-go]');
+  const t = e.target.closest('[data-fav],[data-plus],[data-minus],[data-go],[data-photos]');
   if (!t) return;
+  if (t.dataset.photos !== undefined) return startPhotos();
   if (t.dataset.fav) { const id = t.dataset.fav; fav.has(id) ? fav.delete(id) : fav.add(id); store.set('fav', [...fav]); keepScroll(route); }
   else if (t.dataset.plus) { addToCart(byId.get(t.dataset.plus), 1); keepScroll(route); }
   else if (t.dataset.minus) { addToCart(byId.get(t.dataset.minus), -1); keepScroll(route); }

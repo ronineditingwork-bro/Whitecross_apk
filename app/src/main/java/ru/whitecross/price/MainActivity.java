@@ -24,6 +24,16 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
 import org.json.JSONObject;
 
 public class MainActivity extends Activity {
@@ -72,6 +82,7 @@ public class MainActivity extends Activity {
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
         s.setTextZoom(100); // Samsung font-size setting would otherwise scale the page text and break the layout
+        s.setAllowFileAccess(true); // the downloaded photo pack lives in the app's files dir (see downloadPhotos)
         web.addJavascriptInterface(new Bridge(), "Android");
         web.loadUrl("file:///android_asset/index.html");
     }
@@ -166,5 +177,70 @@ public class MainActivity extends Activity {
                 pv.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "UTF-8", null);
             });
         }
+
+        /** file:// folder with the unpacked photo pack; the page builds photo URLs from it. */
+        @JavascriptInterface
+        public String photoDir() {
+            return "file://" + new File(getFilesDir(), "photos").getAbsolutePath() + "/";
+        }
+
+        /**
+         * Downloads the photo pack (one zip) and unpacks it into files/photos, replacing the old one only
+         * when the whole download succeeded. Reports via window.onPhotos(percent, error, done).
+         */
+        @JavascriptInterface
+        public void downloadPhotos(final String url) {
+            new Thread(() -> {
+                File dir = new File(getFilesDir(), "photos"), tmp = new File(getFilesDir(), "photos.part");
+                try {
+                    deleteTree(tmp);
+                    if (!tmp.mkdirs()) throw new IOException("нет места в памяти телефона");
+                    HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
+                    c.setConnectTimeout(30000);
+                    c.setReadTimeout(60000);
+                    if (c.getResponseCode() != 200) throw new IOException("сервер ответил " + c.getResponseCode());
+                    final long total = c.getContentLengthLong();
+                    final long[] read = {0};
+                    final int[] shown = {-1};
+                    InputStream counting = new FilterInputStream(c.getInputStream()) {
+                        @Override public int read(byte[] b, int off, int len) throws IOException {
+                            int n = super.read(b, off, len);
+                            if (n > 0 && total > 0) {
+                                read[0] += n;
+                                int pct = (int) (read[0] * 100 / total);
+                                if (pct != shown[0]) { shown[0] = pct; report(Math.min(pct, 99) + ",null,false"); }
+                            }
+                            return n;
+                        }
+                    };
+                    byte[] buf = new byte[64 * 1024];
+                    try (ZipInputStream zip = new ZipInputStream(counting)) {
+                        for (ZipEntry e; (e = zip.getNextEntry()) != null; ) {
+                            // flat names only (e.g. 55883-0.webp): never write outside the photos folder
+                            if (e.isDirectory() || !e.getName().matches("[A-Za-z0-9_-]+\\.webp")) continue;
+                            try (FileOutputStream out = new FileOutputStream(new File(tmp, e.getName()))) {
+                                for (int n; (n = zip.read(buf)) > 0; ) out.write(buf, 0, n);
+                            }
+                        }
+                    }
+                    deleteTree(dir);
+                    if (!tmp.renameTo(dir)) throw new IOException("не удалось сохранить фото");
+                    report("100,null,true");
+                } catch (Exception e) {
+                    deleteTree(tmp);
+                    report("0," + JSONObject.quote(String.valueOf(e.getMessage())) + ",false");
+                }
+            }).start();
+        }
+    }
+
+    private void report(String args) {
+        web.post(() -> web.evaluateJavascript("onPhotos(" + args + ")", null));
+    }
+
+    private static void deleteTree(File f) {
+        File[] kids = f.listFiles();
+        if (kids != null) for (File k : kids) deleteTree(k);
+        f.delete();
     }
 }

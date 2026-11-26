@@ -2,7 +2,7 @@
 
 Usage: python3 -I tools/import_csv.py export.csv app/src/main/assets/products.js
 """
-import csv, json, re, sys
+import csv, hashlib, json, re, sys
 
 SKIP = {'ID элемента', 'Артикул', 'Наименование элемента', 'Описание для анонса', 'Детальное описание',
         'Путь из названий разделов', 'Картинки', 'Варианты исполнения', 'С этим товаром рекомендуем',
@@ -55,4 +55,7 @@ if __name__ == '__main__':
     # A script, not JSON: the Android WebView cannot fetch() files from the app's assets.
     with open(sys.argv[2], 'w', encoding='utf-8') as f:
         f.write('const PRODUCTS = ' + json.dumps(items, ensure_ascii=False, separators=(',', ':')) + ';\n')
+        # Changes whenever any photo URL changes: the app then offers to download the new photo pack (tools/photos.py).
+        ver = hashlib.sha1(json.dumps([(x['id'], x['photos']) for x in items]).encode()).hexdigest()[:10]
+        f.write(f"const PHOTOS_VER = '{ver}';\n")
     print(len(items), 'products')

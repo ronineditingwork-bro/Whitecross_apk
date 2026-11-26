@@ -1,0 +1,26 @@
+# Builds the photo pack the app downloads once after install, and publishes it as a release asset
+# (Releases → «photos» → photos-<PHOTOS_VER>.zip). Runs only when the catalog's photos change.
+name: Photos
+on:
+  push:
+    branches: [main]
+    paths: ['app/src/main/assets/products.js', 'tools/photos.py']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and publish the photo pack
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ver=$(grep -o "PHOTOS_VER = '[0-9a-f]*'" app/src/main/assets/products.js | cut -d"'" -f2)
+          test -n "$ver"
+          gh release view photos >/dev/null 2>&1 || gh release create photos --title "Фото каталога" --notes "Фото для работы без интернета. Приложение скачивает их само: Настройки → «Скачать фото»."
+          if gh release view photos --json assets -q '.assets[].name' | grep -qx "photos-$ver.zip"; then echo "photos-$ver.zip is already published"; exit 0; fi
+          pip install pillow
+          python3 tools/photos.py app/src/main/assets/products.js "photos-$ver.zip"
+          gh release upload photos "photos-$ver.zip"
