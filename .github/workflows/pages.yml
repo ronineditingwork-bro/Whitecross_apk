@@ -1,6 +1,7 @@
-# Every hour: Sanjet stock (Krasnodar, Moscow) -> stock.json on GitHub Pages; the app downloads it.
-# Settings → Pages → Source: GitHub Actions.
-name: Stock
+# Publishes to GitHub Pages (Settings → Pages → Source: GitHub Actions):
+#   WHITECROSS.apk — built on every push; hourly runs reuse the published one;
+#   stock.json     — Sanjet stock (Krasnodar, Moscow), refreshed every hour; the app downloads it.
+name: Build
 on:
   push:
     branches: [main]
@@ -19,13 +20,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: '3.12' }
+      - run: node --test test/*.test.js
       - name: Fetch Sanjet stock
         run: |
           pip install xlrd==2.0.1
           mkdir -p _site
-          python tools/stock.py _site/stock.json
+          python3 tools/stock.py _site/stock.json
+      - name: Reuse published APK (hourly runs)
+        if: github.event_name == 'schedule'
+        id: reuse
+        continue-on-error: true
+        run: curl -fsSL -o _site/WHITECROSS.apk https://ronineditingwork-bro.github.io/Whitecross_apk/WHITECROSS.apk
+      - uses: actions/setup-java@v4
+        if: steps.reuse.outcome != 'success'
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v4
+        if: steps.reuse.outcome != 'success'
+        with: { gradle-version: 8.14.3 }
+      - name: Build APK
+        if: steps.reuse.outcome != 'success'
+        run: |
+          gradle assembleDebug
+          mv app/build/outputs/apk/debug/app-debug.apk _site/WHITECROSS.apk
+      - run: printf '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><p style="font:20px sans-serif;padding:24px"><a href="WHITECROSS.apk">Скачать WHITECROSS.apk</a></p>' > _site/index.html
       - uses: actions/upload-pages-artifact@v3
         with: { path: _site }
   deploy:

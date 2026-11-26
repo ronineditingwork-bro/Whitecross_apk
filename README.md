@@ -4,14 +4,14 @@
 остатки Краснодар и Москва, корзина, «Счёт на оплату» и «Коммерческое предложение» в PDF.
 
 ## Установка
-1. GitHub → **Actions** → последняя сборка **APK** → артефакт **WHITECROSS-apk** (zip с `WHITECROSS.apk`).
-2. Распакуйте на телефоне, откройте `WHITECROSS.apk`, разрешите установку из этого источника.
+1. Откройте на телефоне https://ronineditingwork-bro.github.io/Whitecross_apk/WHITECROSS.apk (собирается при каждом push).
+2. Откройте скачанный файл, разрешите установку из этого источника.
    Новые версии ставятся поверх старой, корзина и настройки сохраняются.
 
 ## Как устроено
 - `app/src/main/assets/` — интерфейс: `index.html`, документы `docs.js`, продавцы `sellers.js`, каталог `products.js`, шрифты сайта.
 - `app/src/main/java/ru/whitecross/price/MainActivity.java` — окно приложения и сохранение PDF в «Загрузки/WHITECROSS».
-- Остатки: робот GitHub Actions (`.github/workflows/pages.yml`) каждый час скачивает файлы
+- Робот GitHub Actions (`.github/workflows/pages.yml`) собирает APK и каждый час скачивает файлы
   «sanjet_krd/msk XLS» с sanjet.ru и публикует `stock.json` на GitHub Pages; приложение его загружает.
   Settings → Pages → Source: **GitHub Actions**.
 
