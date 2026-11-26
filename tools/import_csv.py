@@ -1,6 +1,6 @@
-"""Bitrix CSV export (sanjet) -> products.json for the Whitecross app. Only brand WHITECROSS.
+"""Bitrix CSV export (sanjet) -> products.js for the Whitecross app. Only brand WHITECROSS.
 
-Usage: python3 -I whitecross/tools/import_csv.py export.csv whitecross/products.json
+Usage: python3 -I tools/import_csv.py export.csv app/src/main/assets/products.js
 """
 import csv, json, re, sys
 
@@ -52,6 +52,7 @@ if __name__ == '__main__':
         items = convert(csv.DictReader(f, delimiter=';'))
     assert items, 'no WHITECROSS rows'
     assert price('5500000000') == 5500 and category('РАСПРОДАЖА / SALE;Раковины') == 'Раковины'
+    # A script, not JSON: the Android WebView cannot fetch() files from the app's assets.
     with open(sys.argv[2], 'w', encoding='utf-8') as f:
-        json.dump(items, f, ensure_ascii=False, separators=(',', ':'))
+        f.write('const PRODUCTS = ' + json.dumps(items, ensure_ascii=False, separators=(',', ':')) + ';\n')
     print(len(items), 'products')

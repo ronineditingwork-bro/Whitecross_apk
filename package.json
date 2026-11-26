@@ -2,5 +2,5 @@
   "name": "whitecross",
   "private": true,
   "type": "commonjs",
-  "scripts": { "test": "node --test test.js" }
+  "scripts": { "test": "node --test test/*.test.js" }
 }

@@ -1,6 +1,6 @@
-# Publishes the Whitecross app to GitHub Pages and refreshes Sanjet stock (Krasnodar, Moscow) every hour.
+# Every hour: Sanjet stock (Krasnodar, Moscow) -> stock.json on GitHub Pages; the app downloads it.
 # Settings → Pages → Source: GitHub Actions.
-name: Site
+name: Stock
 on:
   push:
     branches: [main]
@@ -25,7 +25,6 @@ jobs:
         run: |
           pip install xlrd==2.0.1
           mkdir -p _site
-          cp index.html doc.html docs.js sellers.js logo.svg products.json _site/
           python tools/stock.py _site/stock.json
       - uses: actions/upload-pages-artifact@v3
         with: { path: _site }

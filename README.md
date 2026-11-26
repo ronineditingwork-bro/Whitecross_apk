@@ -1,18 +1,24 @@
-# WHITECROSS — прайс, остатки, счета и КП
+# WHITECROSS — каталог, остатки, счета и КП (Android)
 
-Веб-приложение для iPhone и Android (Safari/Chrome → «На экран „Домой“»), устроено как приложение MAPEI.
+Приложение для Android 8+ в стиле сайта wcross.ru: каталог WHITECROSS по разделам, фильтр по цвету отделки,
+остатки Краснодар и Москва, корзина, «Счёт на оплату» и «Коммерческое предложение» в PDF.
 
-- Каталог: 1741 товар WHITECROSS из выгрузки Sanjet (`products.json`), розничные цены (РРЦ).
-- Остатки Краснодар и Москва: файлы `sanjet_krd XLS.xls` и `sanjet_msk XLS.xls` из кабинета sanjet.ru. Робот GitHub Actions обновляет `stock.json` каждый час, пароль не нужен.
-- Корзина → «Счёт на оплату» или «Коммерческое предложение» → PDF прямо в браузере. Продавцы — `sellers.js`.
+## Установка
+1. GitHub → **Actions** → последняя сборка **APK** → артефакт **WHITECROSS-apk** (zip с `WHITECROSS.apk`).
+2. Распакуйте на телефоне, откройте `WHITECROSS.apk`, разрешите установку из этого источника.
+   Новые версии ставятся поверх старой, корзина и настройки сохраняются.
 
-## Публикация
-Settings → Pages → Source: **GitHub Actions**. Workflow `.github/workflows/pages.yml` публикует сайт при каждом push в `main` и каждый час.
+## Как устроено
+- `app/src/main/assets/` — интерфейс: `index.html`, документы `docs.js`, продавцы `sellers.js`, каталог `products.js`, шрифты сайта.
+- `app/src/main/java/ru/whitecross/price/MainActivity.java` — окно приложения и сохранение PDF в «Загрузки/WHITECROSS».
+- Остатки: робот GitHub Actions (`.github/workflows/pages.yml`) каждый час скачивает файлы
+  «sanjet_krd/msk XLS» с sanjet.ru и публикует `stock.json` на GitHub Pages; приложение его загружает.
+  Settings → Pages → Source: **GitHub Actions**.
 
 ## Обновить каталог
-Новая выгрузка Sanjet (CSV, «;»):
+Новая выгрузка Sanjet (CSV, «;»), затем push — APK пересоберётся:
 
-    python3 -I tools/import_csv.py export.csv products.json
+    python3 -I tools/import_csv.py export.csv app/src/main/assets/products.js
 
 ## Проверки
-    node --test test.js
+    node --test test/*.test.js

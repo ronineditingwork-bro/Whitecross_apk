@@ -1,7 +1,7 @@
-// node --test whitecross/
+// node --test test/
 const test = require('node:test');
 const assert = require('node:assert');
-const { rubToWords, buildDoc } = require('./docs.js');
+const { rubToWords, buildDoc } = require('../app/src/main/assets/docs.js');
 const seller = { name: 'ООО «Т»', short: 'Т', inn: '1', kpp: '2', ogrn: '3', address: 'Краснодар', phone: '+7', bank: 'Банк', bik: '4', ks: '5', account: '6', director: 'Д. Д.', vatRate: 22 };
 const lines = [{ name: 'Смеситель <b>', art: 'XI1411CR', qty: 2, price: 18330, img: 'https://x/y.jpg' }];
 
